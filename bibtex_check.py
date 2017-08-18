@@ -2,21 +2,17 @@
 
 """
 BibTeX check on missing fields and consistent name conventions (no BibTeX validator),
-especially developed for requirements in Computer Science. 
+especially developed for requirements in Computer Science.
 """
 
-__author__ = "Fabian Beck"
-__version__ = "0.2.0"
+__author__ = "Benjamin Steinwender"
+__version__ = "0.3.0"
+__credits__ = ["BibLaTeX Check by Pez Cuckow", "BibTex Check 0.2.0 by Fabian Beck"]
 __license__ = "MIT"
 
 ####################################################################
 # Properties (please change according to your needs)
 ####################################################################
-
-# files
-bibFile = "test.bib"
-auxFile = "test.aux"                # use "" to deactivate restricting the check to the entries listed in the aux file
-htmlOutput = "bibtex_check.html"
 
 # links
 citeulikeUsername = ""              # if no username is profided, no CiteULike links appear
@@ -25,7 +21,7 @@ scholarHref = "http://scholar.google.de/scholar?hl=en&q="
 googleHref = "https://www.google.de/search?q="
 dblpHref = "http://dblp.org/search/index.php#query="
 
-# fields that are required for a specific type of entry 
+# fields that are required for a specific type of entry
 requiredFields = (("inproceedings",("author","booktitle","pages","publisher","title","year")),
                 ("article",("author","journal","number","pages","title","volume","year")),
                 ("techreport",("author","institution","title","year")),
@@ -38,27 +34,85 @@ requiredFields = (("inproceedings",("author","booktitle","pages","publisher","ti
                 ("electronic",("author","title","url","year")),
                 ("misc",("author","howpublished","title","year")),
                 )
-				
+
 ####################################################################
 
 import string
 import re
+import sys
+from optparse import OptionParser
 
+# Parse options
+usage = sys.argv[
+    0] + " [-b|--bib=<input.bib>] [-a|--aux=<input.aux>] [-o|--output=<output.html>] [-v|--view] [-h|--help]"
+
+parser = OptionParser(usage)
+
+parser.add_option("-b", "--bib", dest="bibFile",
+                  help="Bib File", metavar="input.bib", default="input.bib")
+
+parser.add_option("-a", "--aux", dest="auxFile",
+                  help="Aux File", metavar="input.aux", default="references.aux")
+
+parser.add_option("-o", "--output", dest="htmlOutput",
+                  help="HTML Output File", metavar="output.html", default="bibtex_check.html")
+
+parser.add_option("-v", "--view", dest="view", action="store_true",
+                  help="Open in Browser")
+
+(options, args) = parser.parse_args()
+
+auxFile = options.auxFile
+bibFile = options.bibFile
+htmlOutput = options.htmlOutput
+view = options.view
+
+# Backporting Python 3 open(encoding="utf-8") to Python 2
+# based on http://stackoverflow.com/questions/10971033
+
+if sys.version_info[0] > 2:
+    # py3k
+    pass
+else:
+    # py2
+    import codecs
+    import warnings
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+    def open(file, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None, closefd=True, opener=None):
+        if newline is not None:
+            warnings.warn('newline is not supported in py2')
+        if not closefd:
+            warnings.warn('closefd is not supported in py2')
+        if opener is not None:
+            warnings.warn('opener is not supported in py2')
+        return codecs.open(filename=file, mode=mode, encoding=encoding,
+                    errors=errors, buffering=buffering)
+
+# Find used refernece ID's only
 usedIds = set()
-
-try: 
+try:
     fInAux = open(auxFile, 'r', encoding="utf8")
     for line in fInAux:
         if line.startswith("\\citation"):
-            ids = line.split("{")[1].rstrip("} \n").split(",")
+            ids = line.split("{")[1].rstrip("} \n").split(", ")
             for id in ids:
                 if (id != ""):
                     usedIds.add(id)
     fInAux.close()
 except IOError as e:
-    print("no aux file '"+auxFile+"' exists -> do not restrict entities")
+    print ("WARNING: Aux file '" + auxFile +
+           "' doesn't exist -> not restricting entries")
 
-fIn = open(bibFile, 'r', encoding="utf8")
+try:
+    fIn = open(bibFile, 'r', encoding="utf8")
+except IOError as e:
+    print("ERROR: Input bib file '" + bibFile +
+          "' doesn't exist or is not readable")
+    sys.exit(-1)
+
+# Go through and check all references
 completeEntry = ""
 currentId = ""
 ids = []
@@ -125,7 +179,7 @@ for line in fIn:
             completeEntry += line + "<br />"
         if currentId in usedIds or not usedIds:
             if "=" in line:
-                field = line.split("=")[0].strip()
+                field = line.split("=")[0].strip().lower()
                 fields.append(field)
                 value = line.split("=")[1].strip("{} ,\n")
                 if field == "author":
@@ -139,7 +193,7 @@ for line in fIn:
                 # Checks (please (de)activate/extend to your needs)
                 ####################################################################
 
-                    
+
                 # check if type 'proceedings' might be 'inproceedings'
                 if currentType == "proceedings" and field == "pages":
                     subproblems.append("wrong type: maybe should be 'inproceedings' because entry has page numbers")
@@ -155,7 +209,7 @@ for line in fIn:
                 #if currentType == "inproceedings" and field == "booktitle":
                     #if ":" not in line or ("Proceedings" not in line and "Companion" not in line) or "." in line or " '" not in line or "workshop" in line or "conference" in line or "symposium" in line:
                         #subproblems.append("flawed name: inconsistent formatting of booktitle '"+value+"'")
-                        #counterFlawedNames += 1   
+                        #counterFlawedNames += 1
 
                  # check if title is capitalized (heuristic)
                  #if field == "title":
@@ -165,12 +219,13 @@ for line in fIn:
                             #subproblems.append("flawed name: non-capitalized title '"+currentTitle+"'")
                             #counterFlawedNames += 1
                             #break
-                 
+
                 ####################################################################
-                 
+
 fIn.close()
 
-html = open(htmlOutput, 'w')
+# Write out our HTML file
+html = open(htmlOutput, 'w', encoding="utf8")
 html.write("""<html>
 <head>
 <title>BibTeX Check</title>
@@ -185,7 +240,7 @@ body {
 
 #title {
     width: 720px;
-    
+
     border-bottom: 1px solid black;
 }
 
@@ -409,7 +464,7 @@ $(document).ready(function(){
 </head>
 <body>
 <div id="title">
-<h1><a href='http://code.google.com/p/bibtex-check'>BibTeX Check</a></h1>
+<h1><a href='http://github.com/auge/BibTeX-Check'>BibTeX Check</a></h1>
 <div id="control">
 <form id="search"><input placeholder="search entry ID ..."/></form>
 <form id="mode">
@@ -430,11 +485,12 @@ $(document).ready(function(){
 </div>
 </div>
 """)
+problemCount = counterMissingFields + counterFlawedNames + counterWrongTypes + counterNonUniqueId
 html.write("<div class='info'><h2>Info</h2><ul>")
 html.write("<li>bib file: "+bibFile+"</li>")
 html.write("<li>aux file: "+auxFile+"</li>")
 html.write("<li># entries: "+str(len(problems))+"</li>")
-html.write("<li># problems: "+str(counterMissingFields+counterFlawedNames+counterWrongTypes+counterNonUniqueId)+"</li><ul>")
+html.write("<li># problems: "+str(problemCount)+"</li><ul>")
 html.write("<li># missing fields: "+str(counterMissingFields)+"</li>")
 html.write("<li># flawed names: "+str(counterFlawedNames)+"</li>")
 html.write("<li># wrong types: "+str(counterWrongTypes)+"</li>")
@@ -446,3 +502,13 @@ for problem in problems:
     html.write(problem)
 html.write("</body></html>")
 html.close()
+
+if view:
+    import webbrowser
+    webbrowser.open(html.name)
+
+print("SUCCESS: Report {} has been generated".format(htmlOutput))
+
+if problemCount > 0:
+    print("WARNING: Found {} problems.".format(problemCount))
+    sys.exit(-1)
