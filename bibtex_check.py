@@ -34,7 +34,7 @@ requiredFields = (
     ("phdthesis",("author","title","school","year")),                         # optional:
     ("mastersthesis",("author","title","school","year")),                     # optional:
     ("electronic",("author","title","url","year")),                           # optional:
-    ("misc",("author","title","howpublished","year")),                        # optional:
+    ("misc",("author","title","year")),                                       # optional: howpublished
 )
 
 ####################################################################
