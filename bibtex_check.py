@@ -27,8 +27,8 @@ requiredFields = (
     ("article",("author","title","journal","year","volume")),                 # optional: number, pages
     ("techreport",("author","title","institution","year")),                   # optional:
     ("incollection",("author","title","booktitle","publisher","year")),       # optional: pages
-    ("book",("author","title","publisher","year")),                           # optional:
-    ("inbook",("author","title","pages","publisher","year")),                 # optional: booktitle
+    ("book",("author/editor","title","publisher","year")),                    # optional:
+    ("inbook",("author/editor","title","pages/chapter","publisher","year")),  # optional: booktitle
     ("proceedings",("title","year")),                                         # optional: editor, publisher
     ("phdthesis",("author","title","school","year")),                         # optional:
     ("mastersthesis",("author","title","school","year")),                     # optional:
@@ -139,7 +139,9 @@ for line in fIn:
             for requiredFieldsType in requiredFields:
                 if requiredFieldsType[0] == currentType:
                     for field in requiredFieldsType[1]:
-                        if field not in fields:
+                        # split alternative field combinations
+                        # field = "author/editor"; fields might be [author, ...] or [editor, ...]
+                        if not any(f in fields for f in field.split("/")):
                             subproblems.append("missing field '"+field+"'")
                             counterMissingFields += 1
         else:
