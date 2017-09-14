@@ -23,17 +23,17 @@ dblpHref = "http://dblp.org/search/index.php#query="
 
 # fields that are required for a specific type of entry
 requiredFields = (
-    ("inproceedings",("author","booktitle","pages","publisher","title","year")),
-    ("article",("author","journal","number","pages","title","volume","year")),
-    ("techreport",("author","institution","title","year")),
-    ("incollection",("author","booktitle","pages","publisher","title","year")),
-    ("book",("author","publisher","title","year")),
-    ("inbook",("author","booktitle","pages","publisher","title","year")),
-    ("proceedings",("editor","publisher","title","year")),
-    ("phdthesis",("author","school","title","year")),
-    ("mastersthesis",("author","school","title","year")),
-    ("electronic",("author","title","url","year")),
-    ("misc",("author","howpublished","title","year")),
+    ("inproceedings",("author","title","booktitle","year")),                  # optional: pages, publisher
+    ("article",("author","title","journal","year","volume")),                 # optional: number, pages
+    ("techreport",("author","title","institution","year")),                   # optional:
+    ("incollection",("author","title","booktitle","publisher","year")),       # optional: pages
+    ("book",("author","title","publisher","year")),                           # optional:
+    ("inbook",("author","title","pages","publisher","year")),                 # optional: booktitle
+    ("proceedings",("title","year")),                                         # optional: editor, publisher
+    ("phdthesis",("author","title","school","year")),                         # optional:
+    ("mastersthesis",("author","title","school","year")),                     # optional:
+    ("electronic",("author","title","url","year")),                           # optional:
+    ("misc",("author","title","howpublished","year")),                        # optional:
 )
 
 ####################################################################
@@ -56,7 +56,7 @@ parser.add_option("-o", "--output", dest="htmlOutput",
                   help="HTML Output File", metavar="output.html", default="bibtex_check.html")
 
 parser.add_option("-C", "--no-console", dest="noconsole", action="store_true",
-                  help="Do not print errors to console", default=False)
+                  help="Do not print errors to console")
 
 parser.add_option("-v", "--view", dest="view", action="store_true",
                   help="Open in Browser")
@@ -150,13 +150,12 @@ for line in fIn:
             problem += "<h2>"+currentId+" ("+currentType+")</h2> "
             problem += "<div class='links'>"
             if citeulikeUsername:
-                problem += "<a href='"+citeulikeHref+currentArticleId+"'>CiteULike</a>"
-            problem += " | <a href='"+scholarHref+cleanedTitle+"'>Scholar</a>"
-            problem += " | <a href='"+googleHref+cleanedTitle+"'>Google</a>"
-            problem += " | <a href='"+dblpHref+cleanedTitle+"'>DBLP</a>"
+                problem += "<a href='"+citeulikeHref+currentArticleId+"' target='_blank'>CiteULike</a>"
+            problem += " | <a href='"+scholarHref+cleanedTitle+"' target='_blank'>Scholar</a>"
+            problem += " | <a href='"+googleHref+cleanedTitle+"' target='_blank'>Google</a>"
+            problem += " | <a href='"+dblpHref+cleanedTitle+"' target='_blank'>DBLP</a>"
             problem += "</div>"
-            problem += "<div class='reference'>"+currentTitle
-            problem += "</div>"
+            problem += "<div class='reference'>"+currentTitle + "</div>"
             problem += "<ul>"
             for subproblem in subproblems:
                 problem += "<li>"+subproblem+"</li>"
