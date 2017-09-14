@@ -6,7 +6,7 @@ especially developed for requirements in Computer Science.
 """
 
 __author__ = "Benjamin Steinwender"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __credits__ = ["BibLaTeX Check by Pez Cuckow", "BibTex Check 0.2.0 by Fabian Beck"]
 __license__ = "MIT"
 
@@ -44,19 +44,19 @@ import sys
 from optparse import OptionParser
 
 # Parse options
-usage = sys.argv[
-    0] + " [-b|--bib=<input.bib>] [-a|--aux=<input.aux>] [-o|--output=<output.html>] [-v|--view] [-h|--help]"
-
-parser = OptionParser(usage)
+parser = OptionParser()
 
 parser.add_option("-b", "--bib", dest="bibFile",
                   help="Bib File", metavar="input.bib", default="input.bib")
 
 parser.add_option("-a", "--aux", dest="auxFile",
-                  help="Aux File", metavar="input.aux", default="references.aux")
+                  help="Aux File", metavar="input.aux", default="input.aux")
 
 parser.add_option("-o", "--output", dest="htmlOutput",
                   help="HTML Output File", metavar="output.html", default="bibtex_check.html")
+
+parser.add_option("-C", "--no-console", dest="noconsole", action="store_true",
+                  help="Do not print errors to console", default=False)
 
 parser.add_option("-v", "--view", dest="view", action="store_true",
                   help="Open in Browser")
@@ -67,6 +67,7 @@ auxFile = options.auxFile
 bibFile = options.bibFile
 htmlOutput = options.htmlOutput
 view = options.view
+toconsole = not options.noconsole
 
 # Backporting Python 3 open(encoding="utf-8") to Python 2
 # based on http://stackoverflow.com/questions/10971033
@@ -159,6 +160,8 @@ for line in fIn:
             problem += "<ul>"
             for subproblem in subproblems:
                 problem += "<li>"+subproblem+"</li>"
+                if toconsole:
+                    print("PROBLEM: " + currentId + " - " + subproblem)
             problem += "</ul>"
             problem += "<form class='problem_control'><label>checked</label><input type='checkbox' class='checked'/></form>"
             problem += "<div class='bibtex_toggle'>Current BibTeX Entry</div>"
