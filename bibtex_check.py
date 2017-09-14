@@ -24,6 +24,7 @@ dblpHref = "http://dblp.org/search/index.php#query="
 # fields that are required for a specific type of entry
 requiredFields = (
     ("inproceedings",("author","title","booktitle","year")),                  # optional: pages, publisher
+    ("conference",("author","title","booktitle","year")),                     # optional:
     ("article",("author","title","journal","year","volume")),                 # optional: number, pages
     ("techreport",("author","title","institution","year")),                   # optional:
     ("incollection",("author","title","booktitle","publisher","year")),       # optional: pages
