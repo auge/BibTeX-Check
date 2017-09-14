@@ -22,18 +22,19 @@ googleHref = "https://www.google.de/search?q="
 dblpHref = "http://dblp.org/search/index.php#query="
 
 # fields that are required for a specific type of entry
-requiredFields = (("inproceedings",("author","booktitle","pages","publisher","title","year")),
-                ("article",("author","journal","number","pages","title","volume","year")),
-                ("techreport",("author","institution","title","year")),
-                ("incollection",("author","booktitle","pages","publisher","title","year")),
-                ("book",("author","publisher","title","year")),
-                ("inbook",("author","booktitle","pages","publisher","title","year")),
-                ("proceedings",("editor","publisher","title","year")),
-                ("phdthesis",("author","school","title","year")),
-                ("mastersthesis",("author","school","title","year")),
-                ("electronic",("author","title","url","year")),
-                ("misc",("author","howpublished","title","year")),
-                )
+requiredFields = (
+    ("inproceedings",("author","booktitle","pages","publisher","title","year")),
+    ("article",("author","journal","number","pages","title","volume","year")),
+    ("techreport",("author","institution","title","year")),
+    ("incollection",("author","booktitle","pages","publisher","title","year")),
+    ("book",("author","publisher","title","year")),
+    ("inbook",("author","booktitle","pages","publisher","title","year")),
+    ("proceedings",("editor","publisher","title","year")),
+    ("phdthesis",("author","school","title","year")),
+    ("mastersthesis",("author","school","title","year")),
+    ("electronic",("author","title","url","year")),
+    ("misc",("author","howpublished","title","year")),
+)
 
 ####################################################################
 
@@ -90,7 +91,7 @@ else:
         return codecs.open(filename=file, mode=mode, encoding=encoding,
                     errors=errors, buffering=buffering)
 
-# Find used refernece ID's only
+# Find used reference ID's only
 usedIds = set()
 try:
     fInAux = open(auxFile, 'r', encoding="utf8")
@@ -172,7 +173,7 @@ for line in fIn:
             counterNonUniqueId += 1
         else:
             ids.append(currentId)
-        currentType = line.split("{")[0].strip("@ ")
+        currentType = line.split("{")[0].strip("@ ").lower()
         completeEntry = line + "<br />"
     else:
         if line != "":
