@@ -1,0 +1,18 @@
+{
+requiredFields: {
+    inproceedings: ["author","title","booktitle","year"],
+    conference: ["author","title","booktitle","year"],
+    article: ["author","title","journal","year","volume"],
+    techreport: ["author","title","institution","year"],
+    incollection: ["author","title","booktitle","publisher","year"],
+    book: ["author/editor","title","publisher","year"],
+    inbook: ["author/editor","title","pages/chapter","publisher","year"],
+    proceedings: ["title","year"],
+    phdthesis: ["author","title","school","year"],
+    mastersthesis: ["author","title","school","year"],
+    electronic: ["author","title","url","year"],
+    misc: ["author","title","year"],
+    standard: ["title","organization","institution","year"],
+    manual: ["title"],
+}
+}

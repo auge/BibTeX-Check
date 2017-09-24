@@ -6,7 +6,7 @@ especially developed for requirements in Computer Science.
 """
 
 __author__ = "Benjamin Steinwender"
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __credits__ = ["BibLaTeX Check by Pez Cuckow", "BibTex Check 0.2.0 by Fabian Beck"]
 __license__ = "MIT"
 
@@ -22,20 +22,22 @@ googleHref = "https://www.google.de/search?q="
 dblpHref = "http://dblp.org/search/index.php#query="
 
 # fields that are required for a specific type of entry
-requiredFields = (
-    ("inproceedings",("author","title","booktitle","year")),                  # optional: pages, publisher
-    ("conference",("author","title","booktitle","year")),                     # optional:
-    ("article",("author","title","journal","year","volume")),                 # optional: number, pages
-    ("techreport",("author","title","institution","year")),                   # optional:
-    ("incollection",("author","title","booktitle","publisher","year")),       # optional: pages
-    ("book",("author/editor","title","publisher","year")),                    # optional:
-    ("inbook",("author/editor","title","pages/chapter","publisher","year")),  # optional: booktitle
-    ("proceedings",("title","year")),                                         # optional: editor, publisher
-    ("phdthesis",("author","title","school","year")),                         # optional:
-    ("mastersthesis",("author","title","school","year")),                     # optional:
-    ("electronic",("author","title","url","year")),                           # optional:
-    ("misc",("author","title","year")),                                       # optional: howpublished
-)
+requiredFields = {
+    "inproceedings":["author","title","booktitle","year"],                  # optional: pages, publisher
+    "conference":["author","title","booktitle","year"],                     # optional:
+    "article":["author","title","journal","year","volume"],                 # optional: number, pages
+    "techreport":["author","title","institution","year"],                   # optional:
+    "incollection":["author","title","booktitle","publisher","year"],       # optional: pages
+    "book":["author/editor","title","publisher","year"],                    # optional:
+    "inbook":["author/editor","title","pages/chapter","publisher","year"],  # optional: booktitle
+    "proceedings":["title","year"],                                         # optional: editor, publisher
+    "phdthesis":["author","title","school","year"],                         # optional:
+    "mastersthesis":["author","title","school","year"],                     # optional:
+    "electronic":["author","title","url","year"],                           # optional:
+    "misc":["author","title","year"],                                       # optional: howpublished
+    "standard":["title","organization","institution","year"],
+    "manual":["title"],
+}
 
 ####################################################################
 
@@ -56,7 +58,10 @@ parser.add_option("-a", "--aux", dest="auxFile",
 parser.add_option("-o", "--output", dest="htmlOutput",
                   help="HTML Output File", metavar="output.html", default="bibtex_check.html")
 
-parser.add_option("-C", "--no-console", dest="noconsole", action="store_true",
+parser.add_option("-c", "--config", dest="config",
+                  help="Config file", metavar="config.json5")
+
+parser.add_option("-N", "--no-console", dest="noconsole", action="store_true",
                   help="Do not print errors to console")
 
 parser.add_option("-v", "--view", dest="view", action="store_true",
@@ -67,6 +72,7 @@ parser.add_option("-v", "--view", dest="view", action="store_true",
 auxFile = options.auxFile
 bibFile = options.bibFile
 htmlOutput = options.htmlOutput
+configFile = options.config
 view = options.view
 toconsole = not options.noconsole
 
@@ -115,6 +121,17 @@ except IOError as e:
           "' doesn't exist or is not readable")
     sys.exit(-1)
 
+# Load config file
+if configFile:
+    try:
+        import json5 as json
+    except ImportError:
+        print ("WARNING: json5 not installed, trying to use json")
+        import json
+    with open(configFile) as config:
+        data = json.load(config)
+    requiredFields = data["requiredFields"]
+
 # Go through and check all references
 completeEntry = ""
 currentId = ""
@@ -137,14 +154,16 @@ for line in fIn:
     line = line.strip("\n")
     if line.startswith("@"):
         if currentId in usedIds or not usedIds:
-            for requiredFieldsType in requiredFields:
-                if requiredFieldsType[0] == currentType:
-                    for field in requiredFieldsType[1]:
-                        # split alternative field combinations
-                        # field = "author/editor"; fields might be [author, ...] or [editor, ...]
-                        if not any(f in fields for f in field.split("/")):
-                            subproblems.append("missing field '"+field+"'")
-                            counterMissingFields += 1
+            if currentType in requiredFields:
+                for field in requiredFields[currentType]:
+                    # split alternative field combinations
+                    # field = "author/editor"; fields might be [author, ...] or [editor, ...]
+                    if not any(f in fields for f in field.split("/")):
+                        subproblems.append("missing field '"+field+"'")
+                        counterMissingFields += 1
+            else:
+                if currentType:
+                    print("Ignoring unspecified entry type " + currentType)
         else:
             subproblems = []
         if currentId in usedIds or (currentId and not usedIds):
