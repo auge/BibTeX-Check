@@ -61,11 +61,11 @@ parser.add_option("-o", "--output", dest="htmlOutput",
 parser.add_option("-c", "--config", dest="config",
                   help="Config file", metavar="config.json5")
 
-parser.add_option("-N", "--no-console", dest="noconsole", action="store_true",
-                  help="Do not print errors to console")
-
 parser.add_option("-v", "--view", dest="view", action="store_true",
                   help="Open in Browser")
+
+parser.add_option("-N", "--no-console", dest="no_console", action="store_true",
+                  help="Do not print problems to console")
 
 (options, args) = parser.parse_args()
 
@@ -74,7 +74,7 @@ bibFile = options.bibFile
 htmlOutput = options.htmlOutput
 configFile = options.config
 view = options.view
-toconsole = not options.noconsole
+toconsole = not options.no_console
 
 # Backporting Python 3 open(encoding="utf-8") to Python 2
 # based on http://stackoverflow.com/questions/10971033
