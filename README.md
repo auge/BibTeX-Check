@@ -11,24 +11,29 @@ The results of the check are printed to an html file, which includes links to Go
 
 Please note that it is **not a BibTeX validator**. And in the current version, it might not yet be able to parse every valid bib file. The software targets the specific needs of Computer Scientist, but may be applicable in other fields as well.
 
+For use in automated environments, BibTeX-Check returns errors on the console (can be disabled).
+Further, it returns an exit code depending on whether problems have been found.
+
+The html output is tested with Firefox and Chrome, but the current version does not properly work with Internet Explorer.
+
 ## Getting Started
 
 Just copy the file into a directory with write permission, then run the script
 
-	./bibtex_check.py <-b input.bib> [-a input.aux] [-o output.html]
+	./bibtex_check.py <-b input.bib> [-a input.aux] [-o output.html] [-c config.json5]
 
 If you provide the additional aux file (created when compiling a tex document), then the check of the bib file is restricted to only those entries that are really cited in the tex document.
-
-The html output is tested with Firefox and Chrome, but the current version does not properly work with Internet Explorer.
 
 ## Options
 
 Specify these when calling the script.
 
-- -b (--bib) Set the input Bib File
-- -a (--aux) Set the input Aux File
-- -o (--output) Set the HTML Output File
-- -v (--view) Open in Browser")
+- -b (--bib=file.bib) Set the input Bib File
+- -a (--aux=file.aux) Set the input Aux File
+- -o (--output=file.html) Write results to the HTML Output File
+- -c (--config=file.json5) Load config file
+- -v (--view) Open in Browser. Use together with -o.
+- -N (--no-console) Do not print problems to console. An exit code is always returned.
 
 ## Help
 
@@ -43,10 +48,6 @@ BibTeX-Check is copied from [BibTex Check](https://code.google.com/p/bibtex-chec
 Further, I have used the improvements provided from [BibLatex Check](https://github.com/Pezmc/BibLatex-Check) by Pez Cuckow, which can be used to validate BibLaTeX files.
 
 See [BibTex vs BibLaTex vs NatBib](http://tex.stackexchange.com/questions/25701) for a comparison of different referencing packages.
-
-## Screenshot
-
-![Screenshots of the BibLatex check screen](/../screenshots/screenshots/checkscreen.png?raw=true "BibLatex Check")
 
 ## License
 
