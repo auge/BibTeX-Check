@@ -23,19 +23,19 @@ dblpHref = "http://dblp.org/search/index.php#query="
 
 # fields that are required for a specific type of entry
 requiredFields = {
-    "inproceedings":["author","title","booktitle","year"],                  # optional: pages, publisher
-    "conference":["author","title","booktitle","year"],                     # optional:
-    "article":["author","title","journal","year","volume"],                 # optional: number, pages
-    "techreport":["author","title","institution","year"],                   # optional:
-    "incollection":["author","title","booktitle","publisher","year"],       # optional: pages
-    "book":["author/editor","title","publisher","year"],                    # optional:
-    "inbook":["author/editor","title","pages/chapter","publisher","year"],  # optional: booktitle
-    "proceedings":["title","year"],                                         # optional: editor, publisher
-    "phdthesis":["author","title","school","year"],                         # optional:
-    "mastersthesis":["author","title","school","year"],                     # optional:
-    "electronic":["author","title","url","year"],                           # optional:
-    "misc":["author","title","year"],                                       # optional: howpublished
-    "standard":["title","organization","institution","year"],
+    "inproceedings":["author","title","booktitle","year"],
+    "conference":["author","title","booktitle","year"],
+    "article":["author","title","journal","year","volume"],
+    "techreport":["author","title","institution","year"],
+    "incollection":["author","title","booktitle","publisher","year"],
+    "book":["author/editor","title","publisher","year"],
+    "inbook":["author/editor","title","pages/chapter","publisher","year"],
+    "proceedings":["title","year"],
+    "phdthesis":["author","title","school","year"],
+    "mastersthesis":["author","title","school","year"],
+    "electronic":["author","title","url","year"],
+    "misc":["author","title","year"],
+    "standard":["title","organization","institution"],
     "manual":["title"],
 }
 
@@ -163,7 +163,7 @@ for line in fIn:
                         counterMissingFields += 1
             else:
                 if currentType:
-                    print("Ignoring unspecified entry type " + currentType)
+                    print("WARNING: Ignoring unspecified entry type " + currentType)
         else:
             subproblems = []
 
@@ -541,5 +541,5 @@ $(document).ready(function(){
     print("SUCCESS: Report {} has been generated".format(htmlOutput))
 
 if problemCount > 0:
-    print("WARNING: Found {} problems.".format(problemCount))
+    print("PROBLEM: Found {} problems.".format(problemCount))
     sys.exit(-1)
