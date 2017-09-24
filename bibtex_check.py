@@ -56,7 +56,7 @@ parser.add_option("-a", "--aux", dest="auxFile",
                   help="Aux File", metavar="input.aux", default="input.aux")
 
 parser.add_option("-o", "--output", dest="htmlOutput",
-                  help="HTML Output File", metavar="output.html", default="bibtex_check.html")
+                  help="HTML Output File", metavar="output.html")
 
 parser.add_option("-c", "--config", dest="config",
                   help="Config file", metavar="config.json5")
@@ -166,6 +166,7 @@ for line in fIn:
                     print("Ignoring unspecified entry type " + currentType)
         else:
             subproblems = []
+
         if currentId in usedIds or (currentId and not usedIds):
             cleanedTitle = currentTitle.translate(removePunctuationMap)
             problem = "<div id='"+currentId+"' class='problem severe"+str(len(subproblems))+"'>"
@@ -204,6 +205,7 @@ for line in fIn:
             completeEntry += line + "<br />"
         if currentId in usedIds or not usedIds:
             if "=" in line:
+                # bibtex is case sensitive
                 field = line.split("=")[0].strip().lower()
                 fields.append(field)
                 value = line.split("=")[1].strip("{} ,\n")
@@ -212,12 +214,11 @@ for line in fIn:
                 if field == "citeulike-article-id":
                     currentArticleId = value
                 if field == "title":
-                    currentTitle = re.sub(r'\}|\{',r'',value)
+                    currentTitle = re.sub(r'\}|\{', r'', value)
 
-                ####################################################################
+                ###############################################################
                 # Checks (please (de)activate/extend to your needs)
-                ####################################################################
-
+                ###############################################################
 
                 # check if type 'proceedings' might be 'inproceedings'
                 if currentType == "proceedings" and field == "pages":
@@ -245,13 +246,17 @@ for line in fIn:
                             #counterFlawedNames += 1
                             #break
 
-                ####################################################################
+                ###############################################################
 
 fIn.close()
 
+
+problemCount = counterMissingFields + counterFlawedNames + counterWrongTypes + counterNonUniqueId
+
 # Write out our HTML file
-html = open(htmlOutput, 'w', encoding="utf8")
-html.write("""<!doctype html>
+if htmlOutput:
+    html = open(htmlOutput, 'w', encoding="utf8")
+    html.write("""<!doctype html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -512,29 +517,28 @@ $(document).ready(function(){
 </div>
 </div>
 """)
-problemCount = counterMissingFields + counterFlawedNames + counterWrongTypes + counterNonUniqueId
-html.write("<div class='info'><h2>Info</h2><ul>")
-html.write("<li>bib file: "+bibFile+"</li>")
-html.write("<li>aux file: "+auxFile+"</li>")
-html.write("<li># entries: "+str(len(problems))+"</li>")
-html.write("<li># problems: "+str(problemCount)+"</li><ul>")
-html.write("<li># missing fields: "+str(counterMissingFields)+"</li>")
-html.write("<li># flawed names: "+str(counterFlawedNames)+"</li>")
-html.write("<li># wrong types: "+str(counterWrongTypes)+"</li>")
-html.write("<li># non-unique id: "+str(counterNonUniqueId)+"</li>")
-html.write("</ul></ul></div>")
+    html.write("<div class='info'><h2>Info</h2><ul>")
+    html.write("<li>bib file: "+bibFile+"</li>")
+    html.write("<li>aux file: "+auxFile+"</li>")
+    html.write("<li># entries: "+str(len(problems))+"</li>")
+    html.write("<li># problems: "+str(problemCount)+"</li><ul>")
+    html.write("<li># missing fields: "+str(counterMissingFields)+"</li>")
+    html.write("<li># flawed names: "+str(counterFlawedNames)+"</li>")
+    html.write("<li># wrong types: "+str(counterWrongTypes)+"</li>")
+    html.write("<li># non-unique id: "+str(counterNonUniqueId)+"</li>")
+    html.write("</ul></ul></div>")
 
-problems.sort()
-for problem in problems:
-    html.write(problem)
-html.write("</body></html>")
-html.close()
+    problems.sort()
+    for problem in problems:
+        html.write(problem)
+    html.write("</body></html>")
+    html.close()
 
-if view:
-    import webbrowser
-    webbrowser.open(html.name)
+    if view:
+        import webbrowser
+        webbrowser.open(html.name)
 
-print("SUCCESS: Report {} has been generated".format(htmlOutput))
+    print("SUCCESS: Report {} has been generated".format(htmlOutput))
 
 if problemCount > 0:
     print("WARNING: Found {} problems.".format(problemCount))
