@@ -167,6 +167,11 @@ for line in fIn:
         else:
             subproblems = []
 
+        # check if url is given, but no urldate
+        if "url" in fields and not "urldate" in fields:
+            subproblems.append("missing field 'urldate' when 'url' is given")
+            counterMissingFields += 1
+
         if currentId in usedIds or (currentId and not usedIds):
             cleanedTitle = currentTitle.translate(removePunctuationMap)
             problem = "<div id='"+currentId+"' class='problem severe"+str(len(subproblems))+"'>"
