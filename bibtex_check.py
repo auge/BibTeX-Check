@@ -172,6 +172,11 @@ for line in fIn:
             subproblems.append("missing field 'urldate' when 'url' is given")
             counterMissingFields += 1
 
+        # check if url is given, but no urldate
+        if "url" in fields and "doi" in fields:
+            subproblems.append("both 'url' and 'doi' given - only one recommended")
+            counterFlawedNames += 1
+
         if currentId in usedIds or (currentId and not usedIds):
             cleanedTitle = currentTitle.translate(removePunctuationMap)
             problem = "<div id='"+currentId+"' class='problem severe"+str(len(subproblems))+"'>"
