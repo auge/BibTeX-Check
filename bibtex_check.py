@@ -6,7 +6,7 @@ especially developed for requirements in Computer Science.
 """
 
 __author__ = "Benjamin Steinwender"
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 __credits__ = ["BibLaTeX Check by Pez Cuckow", "BibTex Check 0.2.0 by Fabian Beck"]
 __license__ = "MIT"
 
@@ -35,7 +35,7 @@ requiredFields = {
     "mastersthesis":["author","title","school","year"],
     "electronic":["author","title","url","year"],
     "misc":["author","title","year"],
-    "standard":["title","organization","institution"],
+    "standard":["title","organization/institution"],
     "manual":["title"],
 }
 
