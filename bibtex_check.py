@@ -162,7 +162,7 @@ for line in fIn:
                         subproblems.append("missing field '"+field+"'")
                         counterMissingFields += 1
             else:
-                if currentType:
+                if currentType and currentType != "comment":
                     print("WARNING: Ignoring unspecified entry type " + currentType)
         else:
             subproblems = []
