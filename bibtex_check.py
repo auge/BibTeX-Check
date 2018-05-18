@@ -220,7 +220,12 @@ for line in fIn:
                 fields.append(field)
                 value = line.split("=")[1].strip("{} ,\n")
                 if field == "author":
-                    currentAuthor = filter(lambda x: not (x in "\\\"{}"), value.split(" and ")[0])
+                    authors = value.split(" and ")
+                    for a in authors:
+                        if a.count(',') > 1:
+                            subproblems.append("flawed name: author with more than 1 comma found '"+value+"'")
+                            counterFlawedNames += 1
+                    currentAuthor = filter(lambda x: not (x in "\\\"{}"), authors[0])
                 if field == "citeulike-article-id":
                     currentArticleId = value
                 if field == "title":
