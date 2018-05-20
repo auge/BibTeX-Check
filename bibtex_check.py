@@ -23,20 +23,23 @@ dblpHref = "http://dblp.org/search/index.php#query="
 
 # fields that are required for a specific type of entry
 requiredFields = {
-    "inproceedings":["author","title","booktitle","year"],
-    "conference":["author","title","booktitle","year"],
     "article":["author","title","journal","year","volume"],
-    "techreport":["author","title","institution","year"],
-    "incollection":["author","title","booktitle","publisher","year"],
     "book":["author/editor","title","publisher","year"],
-    "inbook":["author/editor","title","pages/chapter","publisher","year"],
-    "proceedings":["title","year"],
-    "phdthesis":["author","title","school","year"],
+    "booklet":["author/editor","title","year","howpublished"],
+    "conference":"inproceedings",
+    "inbook":["author/editor","title","chapter/pages","publisher","year"],
+    "incollection":["author","title","booktitle","publisher","year"],
+    "inproceedings":["author","title","booktitle","year"],
+    "manual":["title","year"],
     "mastersthesis":["author","title","school","year"],
-    "electronic":["author","title","url","year"],
     "misc":["author","title","year"],
+    "phdthesis":["author","title","school","year"],
+    "proceedings":["title","year"],
+    "techreport":["author","title","institution","year"],
+    "unpublished":["author","title","note","year"],
+
+    "electronic":["author","title","url","year"],
     "standard":["title","organization/institution"],
-    "manual":["title"],
 }
 
 ####################################################################
@@ -51,19 +54,14 @@ parser = OptionParser()
 
 parser.add_option("-b", "--bib", dest="bibFile",
                   help="Bib File", metavar="input.bib", default="input.bib")
-
 parser.add_option("-a", "--aux", dest="auxFile",
                   help="Aux File", metavar="input.aux", default="input.aux")
-
 parser.add_option("-o", "--output", dest="htmlOutput",
                   help="HTML Output File", metavar="output.html")
-
 parser.add_option("-c", "--config", dest="config",
                   help="Config file", metavar="config.json5")
-
 parser.add_option("-v", "--view", dest="view", action="store_true",
                   help="Open in Browser")
-
 parser.add_option("-N", "--no-console", dest="no_console", action="store_true",
                   help="Do not print problems to console")
 
@@ -155,6 +153,9 @@ for line in fIn:
     if line.startswith("@"):
         if currentId in usedIds or not usedIds:
             if currentType in requiredFields:
+                # resolve type
+                while isinstance(requiredFields[currentType], str):
+                    currentType=requiredFields[currentType]
                 for field in requiredFields[currentType]:
                     # split alternative field combinations
                     # field = "author/editor"; fields might be [author, ...] or [editor, ...]
