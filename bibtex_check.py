@@ -49,6 +49,8 @@ import re
 import sys
 from optparse import OptionParser
 
+print("Python version " + str(sys.version_info[0]))
+
 # Parse options
 parser = OptionParser()
 
