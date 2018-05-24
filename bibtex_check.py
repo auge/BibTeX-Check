@@ -111,7 +111,7 @@ try:
                     usedIds.add(id)
     fInAux.close()
 except IOError as e:
-    print ("WARNING: Aux file '" + auxFile +
+    print ("INFO: Aux file '" + auxFile +
            "' doesn't exist -> not restricting entries")
 
 try:
@@ -126,7 +126,7 @@ if configFile:
     try:
         import json5 as json
     except ImportError:
-        print ("WARNING: json5 not installed, trying to use json")
+	print ("INFO: json5 not installed, trying to use json")
         import json
     with open(configFile) as config:
         data = json.load(config)
