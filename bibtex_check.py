@@ -126,7 +126,7 @@ if configFile:
     try:
         import json5 as json
     except ImportError:
-	print ("INFO: json5 not installed, trying to use json")
+        print ("INFO: json5 not installed, trying to use json")
         import json
     with open(configFile) as config:
         data = json.load(config)
