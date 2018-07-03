@@ -205,7 +205,7 @@ for line in fIn:
             problems.append(problem)
         fields = []
         subproblems = []
-        currentId = line.split("{")[1].rstrip(",\n")
+        currentId = line.split("{")[1].rstrip(",\n").lower()
         if currentId in ids:
             subproblems.append("non-unique id: '"+currentId+"'")
             counterNonUniqueId += 1
