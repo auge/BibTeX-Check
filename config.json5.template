@@ -14,5 +14,6 @@ requiredFields: {
     misc: ["author","title","year"],
     standard: ["title","organization/institution"],
     manual: ["title"],
+	patent:["nationality","number","year/yearfiled"],
 }
 }

@@ -40,6 +40,7 @@ requiredFields = {
 
     "electronic":["author","title","url","year"],
     "standard":["title","organization/institution"],
+	"patent":["nationality","number","year/yearfiled"],
 }
 
 ####################################################################
