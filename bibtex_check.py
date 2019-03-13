@@ -50,7 +50,7 @@ import re
 import sys
 from optparse import OptionParser
 
-print("Python version " + str(sys.version_info[0]))
+print("INFO: Python version " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
 
 # Parse options
 parser = OptionParser()
@@ -100,7 +100,7 @@ else:
         return codecs.open(filename=file, mode=mode, encoding=encoding,
                     errors=errors, buffering=buffering)
 
-# Find used reference ID's only
+# Find used referenced IDs only
 usedIds = set()
 try:
     fInAux = open(auxFile, 'r', encoding="utf8")
