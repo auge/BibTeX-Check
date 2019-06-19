@@ -40,7 +40,7 @@ requiredFields = {
 
     "electronic":["author","title","url","year"],
     "standard":["title","organization/institution"],
-	"patent":["nationality","number","year/yearfiled"],
+    "patent":["nationality","number","year/yearfiled"],
 }
 
 ####################################################################
@@ -197,7 +197,10 @@ for line in fIn:
             for subproblem in subproblems:
                 problem += "<li>"+subproblem+"</li>"
                 if toconsole:
-                    print("PROBLEM: " + currentId + " - " + subproblem)
+                    try:
+                        print("PROBLEM: " + currentId + " - " + subproblem)
+                    except UnicodeEncodeError:
+                        print(("PROBLEM: " + currentId + " - " + subproblem).encode('utf-8'))
             problem += "</ul>"
             problem += "<form class='problem_control'><label>checked</label><input type='checkbox' class='checked'/></form>"
             problem += "<div class='bibtex_toggle'>Current BibTeX Entry</div>"
