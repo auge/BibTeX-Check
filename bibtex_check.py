@@ -50,6 +50,7 @@ import re
 import sys
 import subprocess
 from optparse import OptionParser
+from datetime import datetime
 
 def install(package):
     subprocess.call([sys.executable, "-m", "pip", "install", "--user", package])
@@ -260,6 +261,17 @@ for line in fIn:
                     firstAuthorLastname = unidecode(firstAuthorLastname).lower().replace(" ", "").replace(".", "").replace("'", "")
                     if firstAuthorLastname not in currentId and firstAuthorLastname.replace("-", "") not in currentId:
                         subproblems.append("first authors last name '{}' not part of bib-key".format(firstAuthorLastname))
+                        counterFlawedNames += 1
+                if field == "year":
+                    # check year is 4-digit and in valid range
+                    minyear = 1900
+                    maxyear = int(datetime.now().year)
+                    if not minyear < int(value) <= maxyear:
+                        subproblems.append("year must be in range of ({}, {})".format(minyear, maxyear))
+                        counterFlawedNames += 1
+                    # check year is contained in bib-key
+                    if value not in currentId:
+                        subproblems.append("year is not part of bib-key")
                         counterFlawedNames += 1
                 if field == "citeulike-article-id":
                     currentArticleId = value
