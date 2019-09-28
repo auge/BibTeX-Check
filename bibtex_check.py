@@ -48,8 +48,19 @@ requiredFields = {
 import string
 import re
 import sys
+import subprocess
 from optparse import OptionParser
 
+def install(package):
+    subprocess.call([sys.executable, "-m", "pip", "install", "--user", package])
+
+try:
+    from unidecode import unidecode
+except ModuleNotFoundError as e:
+    install("unidecode")
+    from unidecode import unidecode
+
+#####
 print("INFO: Python version " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
 
 # Parse options
@@ -154,6 +165,7 @@ removePunctuationMap = dict((ord(char), None) for char in string.punctuation)
 for line in fIn:
     line = line.strip("\n")
     if line.startswith("@"):
+        # bib entry start
         if currentId in usedIds or not usedIds:
             if currentType in requiredFields:
                 # resolve type
@@ -218,6 +230,7 @@ for line in fIn:
         currentType = line.split("{")[0].strip("@ ").lower()
         completeEntry = line + "<br />"
     else:
+        # bib entry contents
         if line != "":
             completeEntry += line + "<br />"
         if currentId in usedIds or not usedIds:
@@ -227,12 +240,27 @@ for line in fIn:
                 fields.append(field)
                 value = line.split("=")[1].strip("{} ,\n")
                 if field == "author":
+                    # check correct author format
                     authors = value.split(" and ")
                     for a in authors:
                         if a.count(',') > 1:
                             subproblems.append("flawed name: author with more than 1 comma found '"+value+"'")
                             counterFlawedNames += 1
                     currentAuthor = filter(lambda x: not (x in "\\\"{}"), authors[0])
+                    # check whether author name has curly braces
+                    if "{" in value or "}" in value:
+                        subproblems.append("authors field has curly braces {} - not needed")
+                        counterFlawedNames += 1
+                    # check whether author name is part of bibkey
+                    firstAuthor = authors[0]
+                    if "," in firstAuthor:
+                        firstAuthorLastname = firstAuthor.split(",")[0].strip("{} ,\n")
+                    else:
+                        firstAuthorLastname = firstAuthor.split(" ")[-1].strip("{} ,\n")
+                    firstAuthorLastname = unidecode(firstAuthorLastname).lower()
+                    if firstAuthorLastname not in currentId:
+                        subproblems.append("first authors last name '{}' not part of bib-key".format(firstAuthorLastname))
+                        counterFlawedNames += 1
                 if field == "citeulike-article-id":
                     currentArticleId = value
                 if field == "title":
