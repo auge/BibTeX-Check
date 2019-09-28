@@ -32,13 +32,13 @@ requiredFields = {
     "inproceedings":["author","title","booktitle","year"],
     "manual":["title","year"],
     "mastersthesis":["author","title","school","year"],
-    "misc":["author","title","year"],
+    "misc":["author/organization","title","year"],
     "phdthesis":["author","title","school","year"],
     "proceedings":["title","year"],
-    "techreport":["author","title","institution","year"],
+    "techreport":["author/organization","title","institution","year"],
     "unpublished":["author","title","note","year"],
 
-    "electronic":["author","title","url","year"],
+    "electronic":["author/organization","title","url","year"],
     "standard":["title","organization/institution"],
     "patent":["nationality","number","year/yearfiled"],
 }
@@ -257,8 +257,8 @@ for line in fIn:
                         firstAuthorLastname = firstAuthor.split(",")[0].strip("{} ,\n")
                     else:
                         firstAuthorLastname = firstAuthor.split(" ")[-1].strip("{} ,\n")
-                    firstAuthorLastname = unidecode(firstAuthorLastname).lower()
-                    if firstAuthorLastname not in currentId:
+                    firstAuthorLastname = unidecode(firstAuthorLastname).lower().replace(" ", "").replace(".", "").replace("'", "")
+                    if firstAuthorLastname not in currentId and firstAuthorLastname.replace("-", "") not in currentId:
                         subproblems.append("first authors last name '{}' not part of bib-key".format(firstAuthorLastname))
                         counterFlawedNames += 1
                 if field == "citeulike-article-id":
