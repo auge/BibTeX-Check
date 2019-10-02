@@ -51,9 +51,17 @@ import sys
 import subprocess
 from optparse import OptionParser
 from datetime import datetime
+import platform
 
 def install(package):
-    subprocess.call([sys.executable, "-m", "pip", "install", "--user", package])
+    system = platform.system()
+    if system == 'Linux':
+        subprocess.call([sys.executable, "-m", "pip", "install", "--user", package])
+    elif system == 'Windows':
+        subprocess.call([sys.executable, "-m", "pip", "install", package])
+    else:
+        print("unsupported on " + system)
+        exit(1)
 
 try:
     from unidecode import unidecode
