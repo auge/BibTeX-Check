@@ -282,6 +282,13 @@ for line in fIn:
                     if value not in currentId:
                         subproblems.append("year is not part of bib-key")
                         counterFlawedNames += 1
+                if field == "urldate":
+                    # check urldate is iso-formatted
+                    try:
+                        urldate = dateutil.parser.parse(value)
+                    except ValueError as e:
+                        subproblems.append("urldate '{}' is not formatted according to ISO 8601".format(value))
+                        counterFlawedNames += 1
                 if field == "citeulike-article-id":
                     currentArticleId = value
                 if field == "title":
