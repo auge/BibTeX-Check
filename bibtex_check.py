@@ -35,7 +35,7 @@ requiredFields = {
     "misc":["author/organization","title","year"],
     "phdthesis":["author","title","school","year"],
     "proceedings":["title","year"],
-    "techreport":["author/organization","title","institution","year"],
+    "techreport":["author","title","institution","year"],
     "unpublished":["author","title","note","year"],
 
     "electronic":["author/organization","title","url","year"],
