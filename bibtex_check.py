@@ -297,6 +297,11 @@ for line in fIn:
                     currentArticleId = value
                 if field == "title":
                     currentTitle = re.sub(r'\}|\{', r'', value)
+                if field == "doi":
+                    # must not contain http
+                    if value.startswith("http"):
+                        subproblems.append("DOI '"+value+"' must not start with http - only the numeric part is sufficient")
+                        counterDocumentLinkErrors += 1
 
                 ###############################################################
                 # Checks (please (de)activate/extend to your needs)
