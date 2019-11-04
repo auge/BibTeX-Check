@@ -274,7 +274,7 @@ for line in fIn:
                 if field == "year":
                     # check year is 4-digit and in valid range
                     minyear = 1900
-                    maxyear = int(datetime.now().year)
+                    maxyear = int(datetime.now().year) + 1
                     try:
                         if not minyear < int(value) <= maxyear:
                             subproblems.append("year must be in range of ({}, {})".format(minyear, maxyear))
