@@ -53,13 +53,13 @@ from datetime import datetime
 
 def install(package):
 	from platform import system
-	from subprocess import call
+	from subprocess import run
 	import sys
 	system = system()
 	if system == 'Linux':
-		call([sys.executable, "-m", "pip", "install", "--user", package])
+		run([sys.executable, "-m", "pip", "install", "--user", package])
 	elif system == 'Windows':
-		call([sys.executable, "-m", "pip", "install", package])
+		run([sys.executable, "-m", "pip", "install", package])
 	else:
 		print("unsupported on " + system)
 		exit(1)
