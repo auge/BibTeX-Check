@@ -176,7 +176,7 @@ for line in fIn:
 	line = line.strip("\n")
 	if line.startswith("@"):
 		# bib entry start
-		if currentId in usedIds or not usedIds:
+		if currentId in usedIds or not usedIds and currentId is not '':
 			if currentType in requiredFields:
 				# resolve type
 				while isinstance(requiredFields[currentType], str):
