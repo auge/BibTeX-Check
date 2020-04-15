@@ -172,11 +172,13 @@ counterNonUniqueId = 0
 
 removePunctuationMap = dict((ord(char), None) for char in string.punctuation)
 
+lineNo = 0
 for line in fIn:
+	lineNo += 1
 	line = line.strip("\n")
 	if line.startswith("@"):
 		# bib entry start
-		if currentId in usedIds or not usedIds and currentId is not '':
+		if currentId in usedIds or not usedIds:
 			if currentType in requiredFields:
 				# resolve type
 				while isinstance(requiredFields[currentType], str):
@@ -203,7 +205,7 @@ for line in fIn:
 			subproblems.append("both 'url' and 'doi' given - only one recommended")
 			counterFlawedNames += 1
 
-		if currentId in usedIds or (currentId and not usedIds):
+		if currentId in usedIds or not usedIds:
 			cleanedTitle = currentTitle.translate(removePunctuationMap)
 			problem = "<div id='"+currentId+"' class='problem severe"+str(len(subproblems))+"'>"
 			problem += "<h2>"+currentId+" ("+currentType+")</h2> "
@@ -231,7 +233,7 @@ for line in fIn:
 			problems.append(problem)
 		fields = []
 		subproblems = []
-		currentId = line.split("{")[1].rstrip(",\n").lower()
+		currentId = line.split("{")[1].rstrip(",\n").lower().strip()
 		if currentId in ids:
 			subproblems.append("non-unique id: '"+currentId+"'")
 			counterNonUniqueId += 1
@@ -239,6 +241,9 @@ for line in fIn:
 			ids.append(currentId)
 		currentType = line.split("{")[0].strip("@ ").lower()
 		completeEntry = line + "<br />"
+		if currentId == '':
+			subproblems.append("line {}: missing bibkey for {} found".format(lineNo, currentType))
+			counterFlawedNames += 1
 	else:
 		# bib entry contents
 		if line != "":
