@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 BibTeX check on missing fields and consistent name conventions (no BibTeX validator),
@@ -6,7 +6,7 @@ especially developed for requirements in Computer Science.
 """
 
 __author__ = "Benjamin Steinwender"
-__version__ = "0.5.1"
+__version__ = "0.6.0"
 __credits__ = ["BibLaTeX Check by Pez Cuckow", "BibTex Check 0.2.0 by Fabian Beck"]
 __license__ = "MIT"
 
@@ -97,29 +97,6 @@ htmlOutput = options.htmlOutput
 configFile = options.config
 view = options.view
 toconsole = not options.no_console
-
-# Backporting Python 3 open(encoding="utf-8") to Python 2
-# based on http://stackoverflow.com/questions/10971033
-
-if sys.version_info[0] > 2:
-	# py3k
-	pass
-else:
-	# py2
-	import codecs
-	import warnings
-	reload(sys)
-	sys.setdefaultencoding('utf8')
-	def open(file, mode='r', buffering=-1, encoding=None,
-			 errors=None, newline=None, closefd=True, opener=None):
-		if newline is not None:
-			warnings.warn('newline is not supported in py2')
-		if not closefd:
-			warnings.warn('closefd is not supported in py2')
-		if opener is not None:
-			warnings.warn('opener is not supported in py2')
-		return codecs.open(filename=file, mode=mode, encoding=encoding,
-					errors=errors, buffering=buffering)
 
 # Find used referenced IDs only
 usedIds = set()
