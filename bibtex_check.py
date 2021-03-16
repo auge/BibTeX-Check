@@ -50,25 +50,8 @@ import re
 import sys
 from optparse import OptionParser
 from datetime import datetime
-
-def install(package):
-	from platform import system
-	from subprocess import run
-	import sys
-	system = system()
-	if system == 'Linux':
-		run([sys.executable, "-m", "pip", "install", "--user", package])
-	elif system == 'Windows':
-		run([sys.executable, "-m", "pip", "install", package])
-	else:
-		print("unsupported on " + system)
-		exit(1)
-
-try:
-	from unidecode import unidecode
-except ModuleNotFoundError as e:
-	install("unidecode")
-	from unidecode import unidecode
+import dateutil.parser
+from unidecode import unidecode
 
 #####
 print("INFO: Python version " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
