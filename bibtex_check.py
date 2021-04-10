@@ -585,3 +585,5 @@ $(document).ready(function(){
 if problemCount > 0:
     print(f"PROBLEM: Found {problemCount} problems.")
     sys.exit(-1)
+
+print(f"INFO: done.")
