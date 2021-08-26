@@ -148,11 +148,11 @@ for line in fIn:
                     # split alternative field combinations
                     # field = "author/editor"; fields might be [author, ...] or [editor, ...]
                     if not any(f in fields for f in field.split("/")):
-                        subproblems.append("missing field '" + field + "'")
+                        subproblems.append(f"{currentType}: missing field '{field}'")
                         counterMissingFields += 1
             else:
                 if currentType and currentType != "comment":
-                    print("WARNING: Ignoring unspecified entry type " + currentType)
+                    print(f"WARNING: Ignoring unspecified entry type {currentType}")
         else:
             subproblems = []
 
