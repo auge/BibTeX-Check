@@ -256,6 +256,9 @@ for line in fIn:
                     if value not in currentId:
                         subproblems.append("year is not part of bib-key")
                         counterFlawedNames += 1
+                if field == "pages":
+                    if value.startswith("1--"):
+                        subproblems.append(f"pages '{value}' is most likey not correct: check that your reference really starts on page 1")
                 if field == "urldate":
                     # check urldate is iso-formatted
                     try:
