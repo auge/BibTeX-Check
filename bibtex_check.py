@@ -18,7 +18,7 @@ __license__ = "MIT"
 citeulikeUsername = ""              # if no username is profided, no CiteULike links appear
 citeulikeHref = "http://www.citeulike.org/user/"+citeulikeUsername+"/article/"
 scholarHref = "http://scholar.google.de/scholar?hl=en&q="
-googleHref = "https://www.google.de/search?q="
+googleHref = "https://duckduckgo.com/?q="
 dblpHref = "http://dblp.org/search/index.php#query="
 
 # fields that are required for a specific type of entry
