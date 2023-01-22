@@ -12,7 +12,8 @@ requiredFields: {
     mastersthesis: ["author","title","school","year"],
     electronic: ["author","title","url","year"],
     misc: ["author","title","year"],
-    standard: ["title","organization","institution"],
+    standard: ["title","organization/institution"],
     manual: ["title"],
+	patent:["nationality","number","year/yearfiled"],
 }
 }
