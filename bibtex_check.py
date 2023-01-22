@@ -175,7 +175,7 @@ for line in fIn:
             if citeulikeUsername:
                 problem += "<a href='"+citeulikeHref+currentArticleId+"' target='_blank'>CiteULike</a>"
             problem += " | <a href='"+scholarHref+cleanedTitle+"' target='_blank'>Scholar</a>"
-            problem += " | <a href='"+webSearchHref+cleanedTitle+"' target='_blank'>Google</a>"
+            problem += " | <a href='"+webSearchHref+cleanedTitle+"' target='_blank'>Web Search</a>"
             problem += " | <a href='"+dblpHref+cleanedTitle+"' target='_blank'>DBLP</a>"
             problem += "</div>"
             problem += "<div class='reference'>"+currentTitle + "</div>"
