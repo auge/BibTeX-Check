@@ -18,7 +18,7 @@ __license__ = "MIT"
 citeulikeUsername = ""              # if no username is profided, no CiteULike links appear
 citeulikeHref = "http://www.citeulike.org/user/"+citeulikeUsername+"/article/"
 scholarHref = "http://scholar.google.de/scholar?hl=en&q="
-googleHref = "https://duckduckgo.com/?q="
+webSearchHref = "https://duckduckgo.com/?q="
 dblpHref = "http://dblp.org/search/index.php#query="
 
 # fields that are required for a specific type of entry
@@ -175,7 +175,7 @@ for line in fIn:
             if citeulikeUsername:
                 problem += "<a href='"+citeulikeHref+currentArticleId+"' target='_blank'>CiteULike</a>"
             problem += " | <a href='"+scholarHref+cleanedTitle+"' target='_blank'>Scholar</a>"
-            problem += " | <a href='"+googleHref+cleanedTitle+"' target='_blank'>Google</a>"
+            problem += " | <a href='"+webSearchHref+cleanedTitle+"' target='_blank'>Google</a>"
             problem += " | <a href='"+dblpHref+cleanedTitle+"' target='_blank'>DBLP</a>"
             problem += "</div>"
             problem += "<div class='reference'>"+currentTitle + "</div>"
