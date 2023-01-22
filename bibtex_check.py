@@ -266,6 +266,7 @@ for line in fIn:
                         firstAuthorLastname = firstAuthor.split(",")[0].strip("{} ,\n")
                     else:
                         firstAuthorLastname = firstAuthor.split(" ")[-1].strip("{} ,\n")
+                    firstAuthorLastname = firstAuthorLastname.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")
                     firstAuthorLastname = unidecode(firstAuthorLastname).lower().replace(" ", "").replace(".", "").replace("'", "")
                     if firstAuthorLastname not in currentId and firstAuthorLastname.replace("-", "") not in currentId:
                         subproblems.append("first authors last name '{}' not part of bib-key".format(firstAuthorLastname))
