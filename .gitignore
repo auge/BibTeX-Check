@@ -1,2 +1,4 @@
 # generated html files
 *.html
+/input.bib
+/input.aux
