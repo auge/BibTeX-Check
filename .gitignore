@@ -1,4 +1,5 @@
 # generated html files
 *.html
-/input.bib
-/input.aux
+# bib and aux files for testing
+*.bib
+*.aux
