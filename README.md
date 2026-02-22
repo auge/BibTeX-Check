@@ -20,7 +20,7 @@ The html output is tested with Firefox and Chrome, but the current version does 
 
 Just copy the file into a directory with write permission, then run the script
 
-	./bibtex_check.py <-b input.bib> [-a input.aux] [-o output.html] [-c config.json5]
+	./bibtex_check.py <-b input.bib> [-a input.aux] [-o output.html] [-c config.json]
 
 If you provide the additional aux file (created when compiling a tex document), then the check of the bib file is restricted to only those entries that are really cited in the tex document.
 
@@ -31,7 +31,7 @@ Specify these when calling the script.
 - -b (--bib=file.bib) Set the input Bib File
 - -a (--aux=file.aux) Set the input Aux File
 - -o (--output=file.html) Write results to the HTML Output File
-- -c (--config=file.json5) Load config file
+- -c (--config=file.json) Load config file
 - -v (--view) Open in Browser. Use together with -o.
 - -N (--no-console) Do not print problems to console. An exit code is always returned.
 
