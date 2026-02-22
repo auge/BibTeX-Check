@@ -7,6 +7,7 @@ especially developed for requirements in Computer Science.
 import string
 import re
 import sys
+import json
 from optparse import OptionParser
 from datetime import datetime
 import dateutil.parser
@@ -45,7 +46,7 @@ requiredFields = {
     "proceedings": ["title", "year"],
     "techreport": ["author", "title", "institution", "year"],
     "unpublished": ["author", "title", "note", "year"],
-
+    # IEEE extensions:
     "electronic": ["author/organization", "title", "url", "year"],
     "standard": ["title", "organization/institution"],
     "patent": ["nationality", "number", "year/yearfiled"],
@@ -55,23 +56,50 @@ requiredFields = {
 
 
 #####
-print("INFO: Python version " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
+print(
+    "INFO: Python version "
+    + str(sys.version_info[0])
+    + "."
+    + str(sys.version_info[1])
+    + "."
+    + str(sys.version_info[2])
+)
 
 # Parse options
 parser = OptionParser()
 
-parser.add_option("-b", "--bib", dest="bibFile",
-                  help="Bib File", metavar="input.bib", default="input.bib")
-parser.add_option("-a", "--aux", dest="auxFile",
-                  help="Aux File", metavar="input.aux", default="input.aux")
-parser.add_option("-o", "--output", dest="htmlOutput",
-                  help="HTML Output File", metavar="output.html")
-parser.add_option("-c", "--config", dest="config",
-                  help="Config file", metavar="config.json5")
-parser.add_option("-v", "--view", dest="view", action="store_true",
-                  help="Open in Browser")
-parser.add_option("-N", "--no-console", dest="no_console", action="store_true",
-                  help="Do not print problems to console")
+parser.add_option(
+    "-b",
+    "--bib",
+    dest="bibFile",
+    help="Bib File",
+    metavar="input.bib",
+    default="input.bib",
+)
+parser.add_option(
+    "-a",
+    "--aux",
+    dest="auxFile",
+    help="Aux File",
+    metavar="input.aux",
+    default="input.aux",
+)
+parser.add_option(
+    "-o", "--output", dest="htmlOutput", help="HTML Output File", metavar="output.html"
+)
+parser.add_option(
+    "-c", "--config", dest="config", help="Config file", metavar="config.json"
+)
+parser.add_option(
+    "-v", "--view", dest="view", action="store_true", help="Open in Browser"
+)
+parser.add_option(
+    "-N",
+    "--no-console",
+    dest="no_console",
+    action="store_true",
+    help="Do not print problems to console",
+)
 
 (options, args) = parser.parse_args()
 
@@ -85,7 +113,7 @@ toconsole = not options.no_console
 # Find used referenced IDs only
 used_cits = set()
 try:
-    fInAux = open(auxFile, 'r', encoding="utf8")
+    fInAux = open(auxFile, "r", encoding="utf8")
     for line in fInAux:
         if line.startswith("\\citation"):
             citations = line.split("{")[1].rstrip("} \n").split(", ")
@@ -93,24 +121,17 @@ try:
                 if cit != "":
                     used_cits.add(cit)
     fInAux.close()
-except IOError as e:
-    print("INFO: Aux file '" + auxFile +
-          "' doesn't exist -> not restricting entries")
+except IOError:
+    print("INFO: Aux file '" + auxFile + "' doesn't exist -> not restricting entries")
 
 try:
-    fIn = open(bibFile, 'r', encoding="utf8")
-except IOError as e:
-    print("ERROR: Input bib file '" + bibFile +
-          "' doesn't exist or is not readable")
+    fIn = open(bibFile, "r", encoding="utf8")
+except IOError:
+    print("ERROR: Input bib file '" + bibFile + "' doesn't exist or is not readable")
     sys.exit(-1)
 
 # Load config file
 if configFile:
-    try:
-        import json5 as json
-    except ImportError:
-        print("INFO: json5 not installed, trying to use json")
-        import json
     with open(configFile) as config:
         data = json.load(config)
     requiredFields = data["requiredFields"]
@@ -126,10 +147,11 @@ fields = []
 problems = []
 subproblems = []
 
-counterMissingFields = 0
+counterDocumentLinkErrors = 0
 counterFlawedNames = 0
-counterWrongTypes = 0
+counterMissingFields = 0
 counterNonUniqueId = 0
+counterWrongTypes = 0
 
 removePunctuationMap = dict((ord(char), None) for char in string.punctuation)
 
@@ -168,14 +190,37 @@ for line in fIn:
 
         if currentId in used_cits or not used_cits:
             cleanedTitle = currentTitle.translate(removePunctuationMap)
-            problem = "<div id='" + currentId + "' class='problem severe" + str(len(subproblems)) + "'>"
+            problem = (
+                "<div id='"
+                + currentId
+                + "' class='problem severe"
+                + str(len(subproblems))
+                + "'>"
+            )
             problem += "<h2>" + currentId + " (" + currentType + ")</h2> "
             problem += "<div class='links'>"
             if citeulikeUsername:
-                problem += "<a href='" + citeulikeHref + currentArticleId + "' target='_blank'>CiteULike</a>"
-            problem += " | <a href='" + scholarHref + cleanedTitle + "' target='_blank'>Scholar</a>"
-            problem += " | <a href='" + webSearchHref + cleanedTitle + "' target='_blank'>Web Search</a>"
-            problem += " | <a href='" + dblpHref + cleanedTitle + "' target='_blank'>DBLP</a>"
+                problem += (
+                    "<a href='"
+                    + citeulikeHref
+                    + currentArticleId
+                    + "' target='_blank'>CiteULike</a>"
+                )
+            problem += (
+                " | <a href='"
+                + scholarHref
+                + cleanedTitle
+                + "' target='_blank'>Scholar</a>"
+            )
+            problem += (
+                " | <a href='"
+                + webSearchHref
+                + cleanedTitle
+                + "' target='_blank'>Web Search</a>"
+            )
+            problem += (
+                " | <a href='" + dblpHref + cleanedTitle + "' target='_blank'>DBLP</a>"
+            )
             problem += "</div>"
             problem += "<div class='reference'>" + currentTitle + "</div>"
             problem += "<ul>"
@@ -185,7 +230,11 @@ for line in fIn:
                     try:
                         print("PROBLEM: " + currentId + " - " + subproblem)
                     except UnicodeEncodeError:
-                        print(("PROBLEM: " + currentId + " - " + subproblem).encode('utf-8'))
+                        print(
+                            ("PROBLEM: " + currentId + " - " + subproblem).encode(
+                                "utf-8"
+                            )
+                        )
             problem += "</ul>"
             problem += "<form class='problem_control'><label>checked</label><input type='checkbox' class='checked'/></form>"
             problem += "<div class='bibtex_toggle'>Current BibTeX Entry</div>"
@@ -202,7 +251,7 @@ for line in fIn:
             citations.append(currentId)
         currentType = line.split("{")[0].strip("@ ").lower()
         completeEntry = line + "<br />"
-        if currentId == '':
+        if currentId == "":
             subproblems.append(f"line {lineNo}: missing bibkey for {currentType} found")
             counterFlawedNames += 1
     else:
@@ -222,13 +271,19 @@ for line in fIn:
                     # check correct author format
                     authors = value.split(" and ")
                     for a in authors:
-                        if a.count(',') > 1:
-                            subproblems.append("flawed name: author with more than 1 comma found '" + value + "'")
+                        if a.count(",") > 1:
+                            subproblems.append(
+                                "flawed name: author with more than 1 comma found '"
+                                + value
+                                + "'"
+                            )
                             counterFlawedNames += 1
-                    currentAuthor = filter(lambda x: not (x in "\\\"{}"), authors[0])
+                    currentAuthor = filter(lambda x: x not in '\\"{}', authors[0])
                     # check whether author name has curly braces
                     if "{" in value or "}" in value:
-                        subproblems.append("authors field has curly braces {} - not needed")
+                        subproblems.append(
+                            "authors field has curly braces {} - not needed"
+                        )
                         counterFlawedNames += 1
                     # check whether author name is part of bibkey
                     firstAuthor = authors[0]
@@ -236,10 +291,25 @@ for line in fIn:
                         firstAuthorLastname = firstAuthor.split(",")[0].strip("{} ,\n")
                     else:
                         firstAuthorLastname = firstAuthor.split(" ")[-1].strip("{} ,\n")
-                    firstAuthorLastname = firstAuthorLastname.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")
-                    firstAuthorLastname = unidecode(firstAuthorLastname).lower().replace(" ", "").replace(".", "").replace("'", "")
-                    if firstAuthorLastname not in currentId and firstAuthorLastname.replace("-", "") not in currentId:
-                        subproblems.append(f"first authors last name '{firstAuthorLastname}' not part of bib-key")
+                    firstAuthorLastname = (
+                        firstAuthorLastname.replace("ä", "ae")
+                        .replace("ö", "oe")
+                        .replace("ü", "ue")
+                    )
+                    firstAuthorLastname = (
+                        unidecode(firstAuthorLastname)
+                        .lower()
+                        .replace(" ", "")
+                        .replace(".", "")
+                        .replace("'", "")
+                    )
+                    if (
+                        firstAuthorLastname not in currentId
+                        and firstAuthorLastname.replace("-", "") not in currentId
+                    ):
+                        subproblems.append(
+                            f"first authors last name '{firstAuthorLastname}' not part of bib-key"
+                        )
                         counterFlawedNames += 1
                 if field == "year":
                     # check year is 4-digit and in valid range
@@ -247,9 +317,11 @@ for line in fIn:
                     maxyear = int(datetime.now().year) + 1
                     try:
                         if not minyear < int(value) <= maxyear:
-                            subproblems.append(f"year must be in range of ({minyear}, {maxyear})")
+                            subproblems.append(
+                                f"year must be in range of ({minyear}, {maxyear})"
+                            )
                             counterFlawedNames += 1
-                    except ValueError as e:
+                    except ValueError:
                         subproblems.append(f"failed to parse year '{value}'")
                         counterFlawedNames += 1
                     # check year is contained in bib-key
@@ -258,22 +330,30 @@ for line in fIn:
                         counterFlawedNames += 1
                 if field == "pages":
                     if value.startswith("1--"):
-                        subproblems.append(f"pages '{value}' is most likey not correct: check that your reference really starts on page 1")
+                        subproblems.append(
+                            f"pages '{value}' is most likey not correct: check that your reference really starts on page 1"
+                        )
                 if field == "urldate":
                     # check urldate is iso-formatted
                     try:
                         urldate = dateutil.parser.parse(value)
-                    except ValueError as e:
-                        subproblems.append(f"urldate '{value}' is not formatted according to ISO 8601")
+                    except ValueError:
+                        subproblems.append(
+                            f"urldate '{value}' is not formatted according to ISO 8601"
+                        )
                         counterFlawedNames += 1
                 if field == "citeulike-article-id":
                     currentArticleId = value
                 if field == "title":
-                    currentTitle = re.sub(r'[}{]', r'', value)
+                    currentTitle = re.sub(r"[}{]", r"", value)
                 if field == "doi":
                     # must not contain http
                     if value.startswith("http"):
-                        subproblems.append("DOI '" + value + "' must not start with http - only the numeric part is sufficient")
+                        subproblems.append(
+                            "DOI '"
+                            + value
+                            + "' must not start with http - only the numeric part is sufficient"
+                        )
                         counterDocumentLinkErrors += 1
 
                 ###############################################################
@@ -282,13 +362,17 @@ for line in fIn:
 
                 # check if type 'proceedings' might be 'inproceedings'
                 if currentType == "proceedings" and field == "pages":
-                    subproblems.append("wrong type: maybe should be 'inproceedings' because entry has page numbers")
+                    subproblems.append(
+                        "wrong type: maybe should be 'inproceedings' because entry has page numbers"
+                    )
                     counterWrongTypes += 1
 
                 # check if abbreviations are used in journal titles
                 if currentType == "article" and field == "journal":
                     if "." in line:
-                        subproblems.append("flawed name: abbreviated journal title '" + value + "'")
+                        subproblems.append(
+                            "flawed name: abbreviated journal title '" + value + "'"
+                        )
                         counterFlawedNames += 1
 
             ###############################################################
@@ -296,12 +380,15 @@ for line in fIn:
 fIn.close()
 
 
-problemCount = counterMissingFields + counterFlawedNames + counterWrongTypes + counterNonUniqueId
+problemCount = (
+    counterMissingFields + counterFlawedNames + counterWrongTypes + counterNonUniqueId
+)
 
 # Write out our HTML file
 if htmlOutput:
-    html = open(htmlOutput, 'w', encoding="utf8")
-    html.write("""<!doctype html>
+    html = open(htmlOutput, "w", encoding="utf8")
+    html.write(
+        """<!doctype html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -561,7 +648,8 @@ $(document).ready(function(){
 <br style="clear: both; " />
 </div>
 </div>
-""")
+"""
+    )
     html.write("<div class='info'><h2>Info</h2><ul>")
     html.write("<li>bib file: " + bibFile + "</li>")
     html.write("<li>aux file: " + auxFile + "</li>")
@@ -581,6 +669,7 @@ $(document).ready(function(){
 
     if view:
         import webbrowser
+
         webbrowser.open(html.name)
 
     print(f"SUCCESS: Report {htmlOutput} has been generated")
@@ -589,4 +678,4 @@ if problemCount > 0:
     print(f"PROBLEM: Found {problemCount} problems.")
     sys.exit(-1)
 
-print(f"INFO: done.")
+print("INFO: done.")
