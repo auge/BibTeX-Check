@@ -10,6 +10,9 @@ jobs:
     pre-commit:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v6
-            - uses: astral-sh/setup-uv@v7
-            - run: ./ci-task.sh
+            - name: Checkout code
+              uses: actions/checkout@v6
+            - name: Run pre-commit checks
+              uses: j178/prek-action@v1
+              with:
+                extra-args: '--all-files'
